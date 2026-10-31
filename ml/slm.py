@@ -9,25 +9,28 @@ import ollama
 from database import db
 from ml import ingest
 
-MODEL = "llama3.2:1b"   # faster than 3b
-MIN_SCORE = 0.20
-CHUNK_CHARS = 800       # less text sent to the model
+MODEL = "llama3.2:3b"
+MIN_SCORE = 0.30        # only strong matches reach the model
+CHUNK_CHARS = 900
 
 SYSTEM = (
     "You are the research assistant of the RVCE Experiential Learning (EL) "
-    "repository. Answer ONLY from the repository excerpts provided. "
-    "Each excerpt is numbered like [1]. Cite the project title when you use it. "
-    "If the excerpts do not contain the answer, say so clearly. Never invent "
-    "projects, results or numbers. "
-    "When asked for similar projects, list the matching project titles and say "
-    "in one line what each one did. "
-    "When asked for research gaps, compare the projects and point out what is "
-    "missing, untested or could be extended, based only on the excerpts. "
-    "Keep answers short and structured."
+    "repository. Use ONLY the numbered excerpts provided. Ignore any excerpt "
+    "that is not clearly about the question. Always refer to a project by its "
+    "full title, never just by its number. "
+    "Format: for each relevant project write one line: "
+    "**Title** (Domain, Year): one sentence on what it did or found. "
+    "If the question asks for research gaps, add a short 'Research gaps' list "
+    "of 2-3 points based only on the excerpts. "
+    "If the user gives only a topic, list the relevant projects in the same "
+    "format. "
+    "If no excerpt is relevant, reply exactly: No relevant projects found in "
+    "the repository. "
+    "Never invent projects, results or numbers."
 )
 
 
-def retrieve(question, k=3, per_project=2):
+def retrieve(question, k=3, per_project=1):
     index = ingest.get_index()
     if index.ntotal == 0:
         return []
@@ -78,8 +81,8 @@ def ask(question, history=None, k=3):
 
     hits = retrieve(search_text, k=k)
     if not hits:
-        msg = ("I could not find relevant projects in the repository for that "
-               "question. Try different keywords.")
+        msg = ("No relevant projects found in the repository. "
+               "Try different keywords.")
         return iter([msg]), []
 
     messages = [{"role": "system", "content": SYSTEM}]
@@ -94,7 +97,7 @@ def ask(question, history=None, k=3):
     def stream():
         try:
             for part in ollama.chat(model=MODEL, messages=messages, stream=True,
-                                    options={"temperature": 0.2,
+                                    options={"temperature": 0.1,
                                              "num_ctx": 4096}):
                 yield part["message"]["content"]
         except Exception as e:
