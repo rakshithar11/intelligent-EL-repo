@@ -835,7 +835,7 @@ if page == "Overview":
                 fig.update_xaxes(rangemode="tozero", gridcolor="#EFEDE8")
                 fig.update_traces(marker_line_width=0)
 
-                st.plotly_chart(fig, use_container_width=True, theme=None)
+                st.plotly_chart(fig, use_container_width=True, theme=None, config={"displayModeBar": False})
 
             with chart2:
 
