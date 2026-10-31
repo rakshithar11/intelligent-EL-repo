@@ -795,7 +795,7 @@ if page == "Overview":
 
             distribution.columns = ["Domain", "Projects"]
 
-                       chart1, chart2 = st.columns([1.15, 1])
+            chart1, chart2 = st.columns([1.15, 1])
 
             with chart1:
 
