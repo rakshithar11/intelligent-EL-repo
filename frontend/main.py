@@ -1319,7 +1319,7 @@ elif page == "Upload Documents":
 
 elif page in ["Faculty Directory", "Research Analytics", "SDG 9 Insights"]:
 
-from analytics import pages as ap
+    from analytics import pages as ap
 
     if page == "Research Analytics":
         ap.show_analytics(all_projects)
