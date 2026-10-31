@@ -1118,20 +1118,40 @@ elif page == "AI Assistant":
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
+    if "ai_mode" not in st.session_state:
+        st.session_state.ai_mode = None
+
     c1, c2, c3 = st.columns([1, 1, 1])
 
-    quick = None
-
-    if c1.button("Find similar projects", use_container_width=True):
-        quick = "Find projects similar to this topic: "
-    if c2.button("Suggest research gaps", use_container_width=True):
-        quick = "What research gaps exist in this topic: "
-    if c3.button("Clear chat", use_container_width=True):
-        st.session_state.chat = []
+    if c1.button(
+        "Find similar projects",
+        use_container_width=True,
+        type="primary" if st.session_state.ai_mode == "similar" else "secondary"
+    ):
+        st.session_state.ai_mode = (
+            None if st.session_state.ai_mode == "similar" else "similar"
+        )
         st.rerun()
 
-    if quick:
-        st.info(f"Type your topic after: \"{quick}\" in the box below.")
+    if c2.button(
+        "Suggest research gaps",
+        use_container_width=True,
+        type="primary" if st.session_state.ai_mode == "gaps" else "secondary"
+    ):
+        st.session_state.ai_mode = (
+            None if st.session_state.ai_mode == "gaps" else "gaps"
+        )
+        st.rerun()
+
+    if c3.button("Clear chat", use_container_width=True):
+        st.session_state.chat = []
+        st.session_state.ai_mode = None
+        st.rerun()
+
+    if st.session_state.ai_mode == "similar":
+        st.info("Mode: Find similar projects. Type a topic or a project title below.")
+    elif st.session_state.ai_mode == "gaps":
+        st.info("Mode: Suggest research gaps. Type a topic below.")
 
     for m in st.session_state.chat:
         with st.chat_message(m["role"]):
@@ -1158,7 +1178,9 @@ elif page == "AI Assistant":
         with st.chat_message("assistant"):
 
             with st.spinner("Searching the repository..."):
-                token_stream, hits = slm.ask(user_q, history)
+                token_stream, hits = slm.ask(
+                    user_q, history, task=st.session_state.ai_mode
+                )
 
             answer = st.write_stream(token_stream)
 
