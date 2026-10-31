@@ -795,18 +795,22 @@ if page == "Overview":
 
             distribution.columns = ["Domain", "Projects"]
 
-            chart1, chart2 = st.columns([1.15, 1])
+                        chart1 = st.container()
+            chart2 = st.container()
 
             with chart1:
 
                 short = distribution.copy()
-                short["Domain"] = short["Domain"].str.replace(" / ", "/")
+                short["Domain"] = (
+                    short["Domain"]
+                    .str.replace(" / ", "/")
+                    .str.replace(" & ", " &<br>")
+                )
 
                 fig = px.bar(
-                    short.sort_values("Projects"),
-                    x="Projects",
-                    y="Domain",
-                    orientation="h",
+                    short,
+                    x="Domain",
+                    y="Projects",
                     title="Projects Across Research Domains",
                     color_discrete_sequence=["#F39A63"]
                 )
@@ -825,19 +829,33 @@ if page == "Overview":
                         size=16,
                         color="#303A46"
                     ),
-                    xaxis_title="Number of projects",
-                    yaxis_title=None,
+                    xaxis_title=None,
+                    yaxis_title="Number of projects",
                     showlegend=False,
-                    margin=dict(l=10, r=20, t=55, b=45)
+                    margin=dict(l=60, r=20, t=55, b=70)
                 )
 
-                fig.update_yaxes(automargin=True)
-                fig.update_xaxes(rangemode="tozero", gridcolor="#EFEDE8")
+                fig.update_xaxes(tickangle=0, automargin=True)
+                fig.update_yaxes(
+                    rangemode="tozero",
+                    gridcolor="#EFEDE8",
+                    automargin=True
+                )
                 fig.update_traces(marker_line_width=0)
 
-                st.plotly_chart(fig, use_container_width=True, theme=None, config={"displayModeBar": False})
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True,
+                    theme=None,
+                    config={"displayModeBar": False}
+                )
 
             with chart2:
+
+                st.markdown(
+                    "<div style='height:10px'></div>",
+                    unsafe_allow_html=True
+                )
 
                 fig2 = px.pie(
                     distribution,
@@ -857,7 +875,7 @@ if page == "Overview":
                 )
 
                 fig2.update_layout(
-                    height=380,
+                    height=400,
                     paper_bgcolor="white",
                     font=dict(
                         family="DM Sans, sans-serif",
@@ -869,21 +887,30 @@ if page == "Overview":
                         size=16,
                         color="#303A46"
                     ),
-                    margin=dict(l=10, r=10, t=55, b=100),
+                    margin=dict(l=10, r=10, t=55, b=20),
                     showlegend=True,
                     legend=dict(
-                        orientation="h",
-                        yanchor="top",
-                        y=-0.02,
-                        x=0,
-                        font=dict(size=11)
+                        orientation="v",
+                        yanchor="middle",
+                        y=0.5,
+                        x=1.02,
+                        font=dict(size=12)
                     )
                 )
 
-                fig2.update_traces(textposition="inside", textinfo="percent")
+                fig2.update_traces(
+                    textposition="inside",
+                    textinfo="percent",
+                    insidetextorientation="horizontal"
+                )
 
-                st.plotly_chart(fig2, use_container_width=True, theme=None, config={"displayModeBar": False})
-        else:
+                st.plotly_chart(
+                    fig2,
+                    use_container_width=True,
+                    theme=None,
+                    config={"displayModeBar": False}
+                )
+
 
             st.info("Upload projects to see research distribution.")
 
