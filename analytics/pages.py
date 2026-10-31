@@ -208,7 +208,7 @@ def show_faculty(projects):
         if not rows:
             st.info("No team names recorded yet. Add them in Upload "
                     "Documents or by editing a project in Browse Projects.")
-                else:
+        else:
             table = pd.DataFrame([{
                 "Team": r["Team"],
                 "Mentor": ", ".join(sorted(r["Mentor"])) or "-",
