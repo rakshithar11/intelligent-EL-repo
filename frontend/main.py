@@ -1258,27 +1258,13 @@ elif page == "Upload Documents":
 # 12. FUTURE MODULES
 # =========================================================
 
-elif page in [
-    "Faculty Directory",
-    "Research Analytics",
-    "SDG 9 Insights"
-]:
+elif page in ["Faculty Directory", "Research Analytics", "SDG 9 Insights"]:
 
-    st.markdown(
-        '<div class="section-label">RESEARCH & INSIGHTS</div>',
-        unsafe_allow_html=True
-    )
+    from analytics import pages as ap
 
-    st.title(page)
-
-    st.divider()
-
-    st.info(
-        f"The {page} module is planned for a future development phase. "
-        "It will be implemented after the core repository is complete."
-    )
-
-    st.write(
-        "The current repository supports document uploads, "
-        "project browsing, intelligent search and the AI assistant."
-    )
+    if page == "Research Analytics":
+        ap.show_analytics(all_projects)
+    elif page == "Faculty Directory":
+        ap.show_faculty(all_projects)
+    else:
+        ap.show_sdg9(all_projects)
