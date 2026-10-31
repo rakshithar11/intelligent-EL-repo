@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+database/el.db
+database/index.faiss
+documents/raw/
