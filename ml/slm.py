@@ -9,9 +9,9 @@ import ollama
 from database import db
 from ml import ingest
 
-MODEL = "llama3.2:3b"
+MODEL = "llama3.2:1b"   # faster than 3b
 MIN_SCORE = 0.20
-CHUNK_CHARS = 1500
+CHUNK_CHARS = 800       # less text sent to the model
 
 SYSTEM = (
     "You are the research assistant of the RVCE Experiential Learning (EL) "
@@ -27,7 +27,7 @@ SYSTEM = (
 )
 
 
-def retrieve(question, k=5, per_project=2):
+def retrieve(question, k=3, per_project=2):
     index = ingest.get_index()
     if index.ntotal == 0:
         return []
@@ -67,7 +67,7 @@ def build_context(hits):
     return "\n\n".join(blocks)
 
 
-def ask(question, history=None, k=5):
+def ask(question, history=None, k=3):
     """Returns (token_stream, hits). Use st.write_stream(token_stream)."""
     history = history or []
     search_text = question
@@ -95,7 +95,7 @@ def ask(question, history=None, k=5):
         try:
             for part in ollama.chat(model=MODEL, messages=messages, stream=True,
                                     options={"temperature": 0.2,
-                                             "num_ctx": 6144}):
+                                             "num_ctx": 4096}):
                 yield part["message"]["content"]
         except Exception as e:
             yield (f"\n\nThe AI model is not available ({type(e).__name__}). "
