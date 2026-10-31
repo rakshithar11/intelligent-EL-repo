@@ -29,6 +29,13 @@ SYSTEM = (
     "Never invent projects, results or numbers."
 )
 
+TASKS = {
+    "similar": ("Task: list the projects most similar to the topic below. "
+                "For each, say in one line how it relates to the topic."),
+    "gaps": ("Task: based only on the excerpts, point out research gaps, "
+             "limitations and possible extensions for the topic below."),
+}
+
 
 def retrieve(question, k=3, per_project=1):
     index = ingest.get_index()
@@ -70,8 +77,10 @@ def build_context(hits):
     return "\n\n".join(blocks)
 
 
-def ask(question, history=None, k=3):
+def ask(question, history=None, k=3, task=None):
     """Returns (token_stream, hits). Use st.write_stream(token_stream)."""
+    if task == "similar":
+        k = 5
     history = history or []
     search_text = question
     if history:
@@ -91,6 +100,7 @@ def ask(question, history=None, k=3):
     messages.append({
         "role": "user",
         "content": f"Repository excerpts:\n\n{build_context(hits)}\n\n"
+                   f"{TASKS.get(task, '')}\n"
                    f"Question: {question}"
     })
 
