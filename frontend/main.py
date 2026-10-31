@@ -882,7 +882,7 @@ if page == "Overview":
 
                 fig2.update_traces(textposition="inside", textinfo="percent")
 
-                st.plotly_chart(fig2, use_container_width=True, theme=None)
+                st.plotly_chart(fig2, use_container_width=True, theme=None, config={"displayModeBar": False})
         else:
 
             st.info("Upload projects to see research distribution.")
