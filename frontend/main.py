@@ -795,44 +795,47 @@ if page == "Overview":
 
             distribution.columns = ["Domain", "Projects"]
 
-            chart1, chart2 = st.columns(2)
+                       chart1, chart2 = st.columns([1.15, 1])
 
             with chart1:
 
+                short = distribution.copy()
+                short["Domain"] = short["Domain"].str.replace(" / ", "/")
+
                 fig = px.bar(
-                    distribution,
-                    x="Domain",
-                    y="Projects",
+                    short.sort_values("Projects"),
+                    x="Projects",
+                    y="Domain",
+                    orientation="h",
                     title="Projects Across Research Domains",
                     color_discrete_sequence=["#F39A63"]
                 )
 
                 fig.update_layout(
-                    height=300,
+                    height=380,
                     plot_bgcolor="white",
                     paper_bgcolor="white",
                     font=dict(
-                        family="DM Sans",
+                        family="DM Sans, sans-serif",
                         color="#56616B",
-                        size=10
+                        size=12
                     ),
                     title_font=dict(
-                        family="Outfit",
-                        size=14,
+                        family="Outfit, sans-serif",
+                        size=16,
                         color="#303A46"
                     ),
-                    xaxis_title=None,
-                    yaxis_title="Number of Projects",
+                    xaxis_title="Number of projects",
+                    yaxis_title=None,
                     showlegend=False,
-                    margin=dict(l=35, r=15, t=45, b=65)
+                    margin=dict(l=10, r=20, t=55, b=45)
                 )
 
-                fig.update_traces(
-                    marker_line_width=0,
-                    marker_cornerradius=5
-                )
+                fig.update_yaxes(automargin=True)
+                fig.update_xaxes(rangemode="tozero", gridcolor="#EFEDE8")
+                fig.update_traces(marker_line_width=0)
 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, theme=None)
 
             with chart2:
 
@@ -840,7 +843,7 @@ if page == "Overview":
                     distribution,
                     names="Domain",
                     values="Projects",
-                    hole=0.62,
+                    hole=0.6,
                     title="Domain-wise Project Share",
                     color_discrete_sequence=[
                         "#E97843",
@@ -854,25 +857,32 @@ if page == "Overview":
                 )
 
                 fig2.update_layout(
-                    height=300,
+                    height=380,
                     paper_bgcolor="white",
                     font=dict(
-                        family="DM Sans",
+                        family="DM Sans, sans-serif",
                         color="#56616B",
-                        size=10
+                        size=12
                     ),
                     title_font=dict(
-                        family="Outfit",
-                        size=14,
+                        family="Outfit, sans-serif",
+                        size=16,
                         color="#303A46"
                     ),
-                    margin=dict(l=15, r=15, t=45, b=15),
+                    margin=dict(l=10, r=10, t=55, b=100),
                     showlegend=True,
-                    legend=dict(font=dict(size=9))
+                    legend=dict(
+                        orientation="h",
+                        yanchor="top",
+                        y=-0.02,
+                        x=0,
+                        font=dict(size=11)
+                    )
                 )
 
-                st.plotly_chart(fig2, use_container_width=True)
+                fig2.update_traces(textposition="inside", textinfo="percent")
 
+                st.plotly_chart(fig2, use_container_width=True, theme=None)
         else:
 
             st.info("Upload projects to see research distribution.")
